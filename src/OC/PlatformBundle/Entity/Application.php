@@ -49,7 +49,7 @@ class Application {
      */
     private $advert;
 
-    function __construct() {
+    public function __construct() {
         // Par défaut, la date de l'annonce est la date d'aujourd'hui
         $this->date = new \Datetime();
     }

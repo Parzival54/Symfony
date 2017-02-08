@@ -3,6 +3,7 @@
 namespace OC\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
@@ -75,12 +76,12 @@ class Advert {
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private $updatedAt;
-    
+
     /**
      * @ORM\Column(name="$nbApplications", type="integer")
      */
     private $nbApplications = 0;
-    
+
     /**
      * @Gedmo\Slug(fields={"title"})
      * @ORM\Column(name="slug", type="string", length=255, unique=true)
@@ -90,6 +91,8 @@ class Advert {
     public function __construct() {
         // Par défaut, la date de l'annonce est la date d'aujourd'hui
         $this->date = new \Datetime();
+        $this->categories = new ArrayCollection();
+        $this->applications = new ArrayCollection();
     }
 
     /**
@@ -326,7 +329,6 @@ class Advert {
         $this->setUpdatedAt(new \DateTime());
     }
 
-
     /**
      * Set nbApplications
      *
@@ -334,8 +336,7 @@ class Advert {
      *
      * @return Advert
      */
-    public function setNbApplications($nbApplications)
-    {
+    public function setNbApplications($nbApplications) {
         $this->nbApplications = $nbApplications;
 
         return $this;
@@ -346,16 +347,15 @@ class Advert {
      *
      * @return integer
      */
-    public function getNbApplications()
-    {
+    public function getNbApplications() {
         return $this->nbApplications;
     }
-    
-    public function increaseApplication(){
+
+    public function increaseApplication() {
         $this->nbApplications++;
     }
-    
-    public function decreaseApplication(){
+
+    public function decreaseApplication() {
         $this->nbApplications--;
     }
 
@@ -366,8 +366,7 @@ class Advert {
      *
      * @return Advert
      */
-    public function setSlug($slug)
-    {
+    public function setSlug($slug) {
         $this->slug = $slug;
 
         return $this;
@@ -378,8 +377,8 @@ class Advert {
      *
      * @return string
      */
-    public function getSlug()
-    {
+    public function getSlug() {
         return $this->slug;
     }
+
 }
