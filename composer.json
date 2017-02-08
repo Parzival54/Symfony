@@ -1,4 +1,5 @@
 {
+    "description": "tuto_symfony",
     "name": "merguez/symfony",
     "license": "proprietary",
     "type": "project",

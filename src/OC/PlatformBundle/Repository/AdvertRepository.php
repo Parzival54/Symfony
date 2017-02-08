@@ -2,6 +2,8 @@
 
 namespace OC\PlatformBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 /**
  * AdvertRepository
  *
@@ -10,27 +12,32 @@ namespace OC\PlatformBundle\Repository;
  */
 class AdvertRepository extends \Doctrine\ORM\EntityRepository {
 
-    public function getAdvertWithCategories(array $categoryNames) {
-        
-        $qb = $this
+    public function getAdverts($page, $nbPerPage) {
+
+        $query = $this
                 ->createQueryBuilder('a')
-                ->innerJoin(a.categories, 'cat')
-                ->addSelect('cat');
+                ->leftJoin('a.image', 'i')
+                ->addSelect('i')
+                ->leftJoin('a.categories', 'c')
+                ->addSelect('c')
+                ->orderBy('a.date', 'DESC')
+                ->getQuery();
         
-        $qb->where($qb->expr()->in('cat.name', $categoryNames));
-        
-        return $qb->getQuery()->getResult();  
+        $query->setFirstResult(($page-1) * $nbPerPage)
+                ->setMaxResults($nbPerPage);
+
+        return new Paginator($query, true);
     }
-    
-    public function getApplicationsWithAdvert($limit){
-        
+
+    public function getApplicationsWithAdvert($limit) {
+
         $qb = $this
                 ->createQueryBuilder('a')
                 ->innerJoin('a.applications', 'app')
                 ->addSelect('app')
-                ->orderBy('app.date','DESC')
+                ->orderBy('app.date', 'DESC')
                 ->setMaxResults($limit);
-        
+
         return $qb->getQuery()->getResult();
     }
 
