@@ -12,14 +12,15 @@
     {# Les erreurs générales du formulaire. #}
     {{ form_errors(form) }}
 
-
-    <div class="form-group">
-        {{ form_label(form.date, "Date de l'annonce", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
-        {{ form_errors(form.date) }}
-        <div class="col-sm-9">
-            {{ form_widget(form.date) }}
+    {% if form.date is defined %}
+        <div class="form-group">
+            {{ form_label(form.date, "Date de l'annonce", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
+            {{ form_errors(form.date) }}
+            <div class="col-sm-9">
+                {{ form_widget(form.date) }}
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     {# Génération manuelle et éclatée : #}
     <div class="form-group">
@@ -51,17 +52,35 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <div class="col-sm-3">
+    {% if form.published is defined %}
+        <div class="form-group">
+            <div class="col-sm-3">
+            </div>
+            <div class="col-sm-9">
+                {{ form_row(form.published) }}
+            </div>
         </div>
+    {% endif %}
+    <div class="form-group">
+        {{ form_label(form.image, "Image", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
+        {{ form_errors(form.image) }}
+
         <div class="col-sm-9">
-            {{ form_row(form.published) }}
+               {{ form_widget(form.image) }}
+        </div>
+    </div>
+    <div class="form-group well">
+        <div class="row col-sm-10 col-sm-offset-1">
+            {# ... #}
+
+            {{ form_row(form.categories) }}
+
+            {# ... #}
         </div>
     </div>
 
     {# Pour le bouton, pas de label ni d'erreur, on affiche juste le widget #}
     {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary'}}) }}
-
     {# Génération automatique des champs pas encore écrits.
        Dans cet exemple, ce serait le champ CSRF (géré automatiquement par Symfony !)
        et tous les champs cachés (type « hidden »). #}
@@ -69,4 +88,7 @@
 
     {# Fermeture de la balise <form> du formulaire HTML #}
     {{ form_end(form) }}
+
+
+
 </div>
