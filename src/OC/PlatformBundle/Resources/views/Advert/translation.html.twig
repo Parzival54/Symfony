@@ -1,0 +1,19 @@
+<html>
+    <body>
+        <br/>
+        <br/>
+        {{ 'Bonjour'|trans }} {{ name }}!
+        <br/>
+        C'est un texte en français.
+        <br/>
+        => {{ 'traduction en français'|trans }} :
+        <br/>
+        {% trans %}
+            C'est un texte en français.
+        {% endtrans %}
+        <br/>
+        {{ 'now'|localizeddate('full','none') }}
+        <br/>
+        {{ 'Au revoir'|trans }}
+    </body>
+</html>

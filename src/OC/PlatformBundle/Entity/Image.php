@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *
  * @ORM\Table(name="image")
  * @ORM\Entity(repositoryClass="OC\PlatformBundle\Repository\ImageRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Image {
 
@@ -95,6 +96,9 @@ class Image {
         return $this->file;
     }
 
+    /**
+     * @param UploadedFile $file
+     */
     function setFile(UploadedFile $file) {
         $this->file = $file;
 
@@ -182,7 +186,7 @@ class Image {
     }
 
     public function getWebPath() {
-        return $this->getUploadDir() . '/' . $this->getUrl();
+        return $this->getUploadDir() . '/' . $this->getId() . '.' . $this->getUrl();
     }
 
 }

@@ -4,10 +4,15 @@ namespace OC\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use OC\PlatformBundle\Entity\Advert;
 use OC\PlatformBundle\Form\AdvertType;
 use OC\PlatformBundle\Form\AdvertEditType;
+use OC\PlatformBundle\Event\MessagePostEvent;
+use OC\PlatformBundle\Event\PlatformEvents;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class AdvertController extends Controller {
 
@@ -17,7 +22,7 @@ class AdvertController extends Controller {
         }
 
         $nbPerPage = 3;
-
+        
         $em = $this->getDoctrine()->getManager();
         $listAdverts = $em->getRepository('OCPlatformBundle:Advert')->getAdverts($page, $nbPerPage);
 
@@ -34,15 +39,9 @@ class AdvertController extends Controller {
         ));
     }
 
-    public function viewAction($id) {
+    public function viewAction(Advert $advert) {
         $em = $this->getDoctrine()->getManager();
-        // On récupère l'annonce $id
-        $advert = $em->getRepository('OCPlatformBundle:Advert')->find($id);
-        // $advert est donc une instance de OC\PlatformBundle\Entity\Advert
-        // ou null si l'id $id n'existe pas, d'où ce if :
-        if (null === $advert) {
-            throw new NotFoundHttpException("L'annonce d'id " . $id . " n'existe pas.");
-        }
+
         // On avait déjà récupéré la liste des candidatures
         $listApplications = $em->getRepository('OCPlatformBundle:Application')
                 ->findBy(array('advert' => $advert))
@@ -58,14 +57,27 @@ class AdvertController extends Controller {
         ));
     }
 
+    /**
+     * @Security("has_role('ROLE_AUTEUR')")
+     */
     public function addAction(Request $request) {
 
         $advert = new Advert();
+        $advert->setIp($request->getClientIp());
 
         $form = $this->createForm(AdvertType::class, $advert);
 
         // Si la requête est en POST
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+
+            // On crée l'évènement avec ses 2 arguments
+            $event = new MessagePostEvent($advert->getContent(), $this->getUser());
+
+            // On déclenche l'évènement
+            $this->get('event_dispatcher')->dispatch(PlatformEvents::POST_MESSAGE, $event);
+
+            // On récupère ce qui a été modifié par le ou les listeners, ici le message
+            $advert->setContent($event->getMessage());
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($advert);
@@ -140,6 +152,21 @@ class AdvertController extends Controller {
         return $this->render('OCPlatformBundle:Advert:menu.html.twig', array(
                     'listAdverts' => $listAdverts
         ));
+    }
+
+    public function translationAction($name) {
+        return $this->render('OCPlatformBundle:Advert:translation.html.twig', array('name' => $name));
+    }
+    
+    /**
+     * 
+     * @param type $json
+     * @return Response
+     * 
+     * @ParamConverter("json")
+     */
+    public function paramConverterAction($json) {
+        return new Response(print_r($json, true));
     }
 
 }

@@ -23,11 +23,10 @@ class AdvertType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
 
         $builder
-                ->add('date', DateTimeType::class)
                 ->add('title', TextType::class)
                 ->add('author', TextType::class)
                 ->add('content', TextareaType::class)
-                ->add('image', ImageType::class)
+                ->add('image', ImageType::class, array('required' => FALSE))
                 ->add('categories', EntityType::class, array(
                     'class' => 'OCPlatformBundle:Category',
                     'choice_label' => 'name',

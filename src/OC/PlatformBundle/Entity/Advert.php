@@ -5,6 +5,8 @@ namespace OC\PlatformBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use OC\PlatformBundle\Validator\Antiflood;
 
 /**
  * Advert
@@ -28,6 +30,7 @@ class Advert {
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="datetime")
+     * @Assert\DateTime()
      */
     private $date;
 
@@ -35,6 +38,7 @@ class Advert {
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\Length(min=10)
      */
     private $title;
 
@@ -42,6 +46,7 @@ class Advert {
      * @var string
      *
      * @ORM\Column(name="author", type="string", length=255)
+     * @Assert\Length(min=2)
      */
     private $author;
 
@@ -49,6 +54,8 @@ class Advert {
      * @var string
      *
      * @ORM\Column(name="content", type="text")
+     * @Assert\NotBlank()
+     * @Antiflood()
      */
     private $content;
 
@@ -59,6 +66,8 @@ class Advert {
 
     /**
      * @ORM\OneToOne(targetEntity="OC\PlatformBundle\Entity\Image", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="image_id", referencedColumnName="id", nullable=true)
+     * @Assert\Valid()
      */
     private $image;
 
@@ -87,6 +96,11 @@ class Advert {
      * @ORM\Column(name="slug", type="string", length=255, unique=true)
      */
     private $slug;
+    
+    /**
+     * @ORM\Column(name="ip_address", type="string", length=15)
+     */
+    private $ip;
 
     public function __construct() {
         // Par défaut, la date de l'annonce est la date d'aujourd'hui
@@ -381,4 +395,28 @@ class Advert {
         return $this->slug;
     }
 
+
+    /**
+     * Set ip
+     *
+     * @param string $ip
+     *
+     * @return Advert
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+
+        return $this;
+    }
+
+    /**
+     * Get ip
+     *
+     * @return string
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
 }
